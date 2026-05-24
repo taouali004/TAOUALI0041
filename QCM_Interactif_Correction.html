@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test QCM Interactif - Session 2024</title>
+    <style>
+        :root {
+            --primary-color: #2b4c7e;
+            --secondary-color: #4a7bb0;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .summary-info h3 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .question-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1.2rem;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .option-label:hover {
+            background-color: #f8f9fa;
+            border-color: var(--secondary-color);
+        }
+
+        .option-label input {
+            margin-right: 12px;
+            margin-top: 4px;
+            transform: scale(1.1);
+        }
+
+        /* Result Styles */
+        .question-card.correct {
+            border-left: 5px solid var(--success-color);
+        }
+
+        .question-card.incorrect {
+            border-left: 5px solid var(--danger-color);
+        }
+
+        .option-label.correct-option {
+            background-color: rgba(39, 174, 96, 0.15) !important;
+            border-color: var(--success-color) !important;
+            font-weight: 600;
+        }
+
+        .option-label.incorrect-option {
+            background-color: rgba(231, 76, 60, 0.15) !important;
+            border-color: var(--danger-color) !important;
+        }
+
+        .explanation-box {
+            margin-top: 1.2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--secondary-color);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            background-color: #e2e8f0;
+        }
+        
+        .badge-multiple {
+            background-color: #feebc8;
+            color: #c05621;
+        }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        @media (max-width: 600px) {
+            .summary-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .floating-actions {
+                position: static;
+                text-align: center;
+                margin-top: 1rem;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Plateforme d'Évaluation Interactive</h1>
+        <p>QCM Complet (60 Questions) avec Réponses Multiples & Explications Intégrées</p>
+    </header>
+
+    <div class="container">
+        <div class="summary-card">
+            <div class="summary-info">
+                <h3>Consignes du Test</h3>
+                <p>Ce QCM regroupe 60 questions couvrant la Statistique, GRH, Comptabilité, Économie, Droit et Informatique. Certaines questions comportent <strong>plusieurs bonnes réponses</strong>.</p>
+            </div>
+            <button class="btn btn-success" onclick="checkAnswers()">Corriger le Test</button>
+        </div>
+
+        <div id="scoreBox" class="score-display">
+            <h2>Votre Résultat</h2>
+            <div class="score-number" id="scoreValue">0 / 60</div>
+            <p id="scoreCommentText"></p>
+            <button class="btn" onclick="window.location.reload()">Recommencer</button>
+        </div>
+
+        <form id="qcmForm">
+
+            <div class="question-card" id="q_box_1">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q1. C'est quoi une unité statistique ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_1_1">
+                        <input type="radio" name="q_1" value="1">
+                        1. Un des éléments composants une population
+                    </label>
+        
+                    <label class="option-label" id="label_1_2">
+                        <input type="radio" name="q_1" value="2">
+                        2. L'ensemble sur lequel porte l'étude
+                    </label>
+        
+                    <label class="option-label" id="label_1_3">
+                        <input type="radio" name="q_1" value="3">
+                        3. Le critère retenu pour étudier une population
+                    </label>
+        
+                    <label class="option-label" id="label_1_4">
+                        <input type="radio" name="q_1" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_1" data-correct="1">
+                    <strong>💡 Explication :</strong> L'unité statistique ou individu est l'élément de base unique composant la population étudiée.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_2">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q2. La statistique descriptive est une statistique aussi appelée :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_2_1">
+                        <input type="radio" name="q_2" value="1">
+                        1. Mathématique
+                    </label>
+        
+                    <label class="option-label" id="label_2_2">
+                        <input type="radio" name="q_2" value="2">
+                        2. Inférentielle
+                    </label>
+        
+                    <label class="option-label" id="label_2_3">
+                        <input type="radio" name="q_2" value="3">
+                        3. Exploratoire
+                    </label>
+        
+                    <label class="option-label" id="label_2_4">
+                        <input type="radio" name="q_2" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_2" data-correct="3">
+                    <strong>💡 Explication :</strong> La statistique descriptive explore, décrit et résume les données sans faire d'inférence mathématique, d'où le terme exploratoire.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_3">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q3. On les utilise pour représenter une série de données en pourcentage, s'agit-il ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_3_1">
+                        <input type="radio" name="q_3" value="1">
+                        1. Diagrammes
+                    </label>
+        
+                    <label class="option-label" id="label_3_2">
+                        <input type="radio" name="q_3" value="2">
+                        2. Histogrammes
+                    </label>
+        
+                    <label class="option-label" id="label_3_3">
+                        <input type="radio" name="q_3" value="3">
+                        3. Graphiques à secteurs
+                    </label>
+        
+                    <label class="option-label" id="label_3_4">
+                        <input type="radio" name="q_3" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_3" data-correct="3">
+                    <strong>💡 Explication :</strong> Les graphiques à secteurs (camemberts) permettent d'illustrer au mieux les proportions et pourcentages d'une population globale.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_4">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q4. Quelle est la différence entre une étude qualitative et une étude quantitative ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_4_1">
+                        <input type="radio" name="q_4" value="1">
+                        1. L'étude quantitative est descriptive et l'étude qualitative est statique
+                    </label>
+        
+                    <label class="option-label" id="label_4_2">
+                        <input type="radio" name="q_4" value="2">
+                        2. L'étude qualitative se concentre sur des interprétations. L'étude quantitative permet de prouver ou démontrer des faits
+                    </label>
+        
+                    <label class="option-label" id="label_4_3">
+                        <input type="radio" name="q_4" value="3">
+                        3. Les résultats de l'étude quantitative sont exprimés en chiffres et celle de l'étude quantitative sont exprimés avec des mots
+                    </label>
+        
+                    <label class="option-label" id="label_4_4">
+                        <input type="radio" name="q_4" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_4" data-correct="2">
+                    <strong>💡 Explication :</strong> L'étude quantitative quantifie et démontre des faits avec des données numériques alors que la qualitative s'attache aux interprétations et motifs profonds.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_5">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q5. On appelle une variance ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_5_1">
+                        <input type="radio" name="q_5" value="1">
+                        1. La racine carrée de 6
+                    </label>
+        
+                    <label class="option-label" id="label_5_2">
+                        <input type="radio" name="q_5" value="2">
+                        2. La valeur du caractère le plus fréquent
+                    </label>
+        
+                    <label class="option-label" id="label_5_3">
+                        <input type="radio" name="q_5" value="3">
+                        3. La moyenne arithmétique des carrés des écarts entre les valeurs du caractère et la moyenne arithmétique
+                    </label>
+        
+                    <label class="option-label" id="label_5_4">
+                        <input type="radio" name="q_5" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_5" data-correct="3">
+                    <strong>💡 Explication :</strong> La variance correspond par définition à la moyenne arithmétique des carrés des écarts à la moyenne.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_6">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q6. Parmi les rôles et responsabilité de la CRH :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_6_1">
+                        <input type="checkbox" name="q_6" value="1">
+                        1. Conception et élaboration des politiques
+                    </label>
+        
+                    <label class="option-label" id="label_6_2">
+                        <input type="checkbox" name="q_6" value="2">
+                        2. Conseils et aides
+                    </label>
+        
+                    <label class="option-label" id="label_6_3">
+                        <input type="checkbox" name="q_6" value="3">
+                        3. Innovation
+                    </label>
+        
+                    <label class="option-label" id="label_6_4">
+                        <input type="checkbox" name="q_6" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_6" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> La fonction RH s'occupe de concevoir les politiques, conseiller les opérationnels et innover face aux mutations du travail.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_7">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q7. Quel est le rôle de la balance ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_7_1">
+                        <input type="radio" name="q_7" value="1">
+                        1. Déterminer le résultat de l'entreprise par la confrontation des produits et des charges de l'exercice (produits - charges)
+                    </label>
+        
+                    <label class="option-label" id="label_7_2">
+                        <input type="radio" name="q_7" value="2">
+                        2. Mettre en évidence les différents cycles (d'exploitation, de financement et d'investissement) et leur équilibre
+                    </label>
+        
+                    <label class="option-label" id="label_7_3">
+                        <input type="radio" name="q_7" value="3">
+                        3. Apprécier la situation patrimoniale et l'activité d'une entreprise, contrôler la comptabilité et l'exactitude du bilan et du compte de résultat
+                    </label>
+        
+                    <label class="option-label" id="label_7_4">
+                        <input type="radio" name="q_7" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_7" data-correct="3">
+                    <strong>💡 Explication :</strong> La balance vérifie le principe de la partie double et prépare de manière fiable l'établissement du bilan et du résultat.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_8">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q8. Le plan comptable est un document qui :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_8_1">
+                        <input type="radio" name="q_8" value="1">
+                        1. Donne la liste des comptes à utiliser par l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_8_2">
+                        <input type="radio" name="q_8" value="2">
+                        2. Contrôle les opérations passées par les entreprises
+                    </label>
+        
+                    <label class="option-label" id="label_8_3">
+                        <input type="radio" name="q_8" value="3">
+                        3. Décrit en terme de produits et de charges les composantes du résultat final
+                    </label>
+        
+                    <label class="option-label" id="label_8_4">
+                        <input type="radio" name="q_8" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_8" data-correct="1">
+                    <strong>💡 Explication :</strong> Le plan comptable est un document officiel listant l'ensemble des comptes classés par catégories (classes 1 à 7).
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_9">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q9. Dans le calcul des coûts il est préférable de :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_9_1">
+                        <input type="radio" name="q_9" value="1">
+                        1. Travailler sur des charges variables unitaires et des charges fixes totales
+                    </label>
+        
+                    <label class="option-label" id="label_9_2">
+                        <input type="radio" name="q_9" value="2">
+                        2. Travailler sur des charges variables totales et les charges fixes unitaires
+                    </label>
+        
+                    <label class="option-label" id="label_9_3">
+                        <input type="radio" name="q_9" value="3">
+                        3. Travailler sur des charges variables totales et les charges fixes totales
+                    </label>
+        
+                    <label class="option-label" id="label_9_4">
+                        <input type="radio" name="q_9" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_9" data-correct="1">
+                    <strong>💡 Explication :</strong> Pour l'analyse de la variabilité des coûts, les charges variables unitaires et les charges fixes globales sont supposées constantes.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_10">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q10. Parmi les principes comptables, on trouve</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_10_1">
+                        <input type="checkbox" name="q_10" value="1">
+                        1. Le principe de continuité d'exploitation
+                    </label>
+        
+                    <label class="option-label" id="label_10_2">
+                        <input type="checkbox" name="q_10" value="2">
+                        2. Le principe de spécialisation des exercices
+                    </label>
+        
+                    <label class="option-label" id="label_10_3">
+                        <input type="checkbox" name="q_10" value="3">
+                        3. Le principe de compensation
+                    </label>
+        
+                    <label class="option-label" id="label_10_4">
+                        <input type="checkbox" name="q_10" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_10" data-correct="1,2">
+                    <strong>💡 Explication :</strong> La continuité d'exploitation et la spécialisation des exercices sont deux principes comptables clés. Le troisième énoncé viole le principe de non-compensation.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_11">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q11. Le taux d'emploi de la Main d'oeuvre est :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_11_1">
+                        <input type="radio" name="q_11" value="1">
+                        1. Temps productif sur temps de présence
+                    </label>
+        
+                    <label class="option-label" id="label_11_2">
+                        <input type="radio" name="q_11" value="2">
+                        2. Temps productif sur le nombre d'heures de travail contractuel
+                    </label>
+        
+                    <label class="option-label" id="label_11_3">
+                        <input type="radio" name="q_11" value="3">
+                        3. Temps de présence sur le nombre d'heures de travail contractuel
+                    </label>
+        
+                    <label class="option-label" id="label_11_4">
+                        <input type="radio" name="q_11" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_11" data-correct="1">
+                    <strong>💡 Explication :</strong> Le taux d'emploi de la MOD mesure l'efficience du temps passé en mesurant le temps productif réel par rapport au temps de présence.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_12">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q12. Le taux horaire utilisé pour le calcul des coûts de la Main d'oeuvre Directe est :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_12_1">
+                        <input type="radio" name="q_12" value="1">
+                        1. La somme de salaires sur le nombre d'heures de travail contractuel
+                    </label>
+        
+                    <label class="option-label" id="label_12_2">
+                        <input type="radio" name="q_12" value="2">
+                        2. La somme de salaires sur le nombre d'heures de travail réel
+                    </label>
+        
+                    <label class="option-label" id="label_12_3">
+                        <input type="radio" name="q_12" value="3">
+                        3. La somme de salaires - les indemnités sur le nombre d'heures de travail réel
+                    </label>
+        
+                    <label class="option-label" id="label_12_4">
+                        <input type="radio" name="q_12" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_12" data-correct="2">
+                    <strong>💡 Explication :</strong> On valorise le coût de la MOD en divisant la somme totale des salaires par le nombre d'heures réelles de travail de production.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_13">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q13. La science économique a pour objectif d'étudier :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_13_1">
+                        <input type="radio" name="q_13" value="1">
+                        1. Comment la société détermine le niveau de production des biens et services
+                    </label>
+        
+                    <label class="option-label" id="label_13_2">
+                        <input type="radio" name="q_13" value="2">
+                        2. D'étudier la façon de répondre le mieux possible aux besoins illimités des êtres humains à partir des ressources limitées
+                    </label>
+        
+                    <label class="option-label" id="label_13_3">
+                        <input type="radio" name="q_13" value="3">
+                        3. D'étudier la façon dont les entreprises peuvent maximiser leurs profits
+                    </label>
+        
+                    <label class="option-label" id="label_13_4">
+                        <input type="radio" name="q_13" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_13" data-correct="2">
+                    <strong>💡 Explication :</strong> La science économique étudie l'allocation optimale de ressources rares et limitées pour satisfaire des besoins illimités.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_14">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q14. Qu'est-ce qu'un indicateur de performance ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_14_1">
+                        <input type="checkbox" name="q_14" value="1">
+                        1. Un outil de mesure et d'analyse
+                    </label>
+        
+                    <label class="option-label" id="label_14_2">
+                        <input type="checkbox" name="q_14" value="2">
+                        2. Un outil d'aide à la prise de décision
+                    </label>
+        
+                    <label class="option-label" id="label_14_3">
+                        <input type="checkbox" name="q_14" value="3">
+                        3. Un indicateur de moyens
+                    </label>
+        
+                    <label class="option-label" id="label_14_4">
+                        <input type="checkbox" name="q_14" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_14" data-correct="1,2">
+                    <strong>💡 Explication :</strong> Un KPI (indicateur clé de performance) sert à la fois à mesurer un état quantifié et à guider les gestionnaires dans leurs choix futurs.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_15">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q15. Qu'est-ce qu'un plan d'action ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_15_1">
+                        <input type="checkbox" name="q_15" value="1">
+                        1. Document interne de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_15_2">
+                        <input type="checkbox" name="q_15" value="2">
+                        2. Définit une stratégie à appliquer pour arriver à un résultat prédéfini
+                    </label>
+        
+                    <label class="option-label" id="label_15_3">
+                        <input type="checkbox" name="q_15" value="3">
+                        3. Un ensemble d'activités à entreprendre
+                    </label>
+        
+                    <label class="option-label" id="label_15_4">
+                        <input type="checkbox" name="q_15" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_15" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Le plan d'action opérationnalise la stratégie en précisant les actions, les responsabilités, le calendrier et les budgets.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_16">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q16. Le savoir-faire d'un technicien en gestion regroupe :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_16_1">
+                        <input type="checkbox" name="q_16" value="1">
+                        1. De la comptabilité approfondie en comptabilité générale, analytique et analyse financière
+                    </label>
+        
+                    <label class="option-label" id="label_16_2">
+                        <input type="checkbox" name="q_16" value="2">
+                        2. De la comptabilité approfondie en gestion de stock, contrôle de gestion
+                    </label>
+        
+                    <label class="option-label" id="label_16_3">
+                        <input type="checkbox" name="q_16" value="3">
+                        3. Permet d'estimer la durée des tâches
+                    </label>
+        
+                    <label class="option-label" id="label_16_4">
+                        <input type="checkbox" name="q_16" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_16" data-correct="1,2">
+                    <strong>💡 Explication :</strong> Le savoir-faire d'un technicien englobe des compétences dures en comptabilité financière, de gestion et pilotage de flux.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_17">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q17. Principaux supports de communication :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_17_1">
+                        <input type="checkbox" name="q_17" value="1">
+                        1. Bilan social
+                    </label>
+        
+                    <label class="option-label" id="label_17_2">
+                        <input type="checkbox" name="q_17" value="2">
+                        2. Note d'information
+                    </label>
+        
+                    <label class="option-label" id="label_17_3">
+                        <input type="checkbox" name="q_17" value="3">
+                        3. Bilan d'activité
+                    </label>
+        
+                    <label class="option-label" id="label_17_4">
+                        <input type="checkbox" name="q_17" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_17" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Le bilan social, la note d'information interne et le rapport annuel sont tous des supports fondamentaux de communication écrite.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_18">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q18. Que signifie le concept « Gestion de projet » ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_18_1">
+                        <input type="checkbox" name="q_18" value="1">
+                        1. Un ensemble d'activités visant à organiser le déroulement d'un projet
+                    </label>
+        
+                    <label class="option-label" id="label_18_2">
+                        <input type="checkbox" name="q_18" value="2">
+                        2. Un ensemble d'activités visant à atteindre des objectifs
+                    </label>
+        
+                    <label class="option-label" id="label_18_3">
+                        <input type="checkbox" name="q_18" value="3">
+                        3. Un ensemble d'activités visant à définir les ressources et les contraintes du projet
+                    </label>
+        
+                    <label class="option-label" id="label_18_4">
+                        <input type="checkbox" name="q_18" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_18" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Gérer un projet implique une méthodologie d'organisation pour atteindre un but spécifique sous triple contrainte (délais, coûts, ressources).
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_19">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q19. Lequel des énoncés suivants définit le mieux la notion de l'efficacité économique ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_19_1">
+                        <input type="radio" name="q_19" value="1">
+                        1. L'efficacité économique suppose que tous les besoins des individus sont comblés
+                    </label>
+        
+                    <label class="option-label" id="label_19_2">
+                        <input type="radio" name="q_19" value="2">
+                        2. L'efficacité économique suppose que seuls les besoins primaires des individus sont comblés
+                    </label>
+        
+                    <label class="option-label" id="label_19_3">
+                        <input type="radio" name="q_19" value="3">
+                        3. L'efficacité économique suppose que l'on utilise de façon optimale les ressources rares afin de combler le plus de besoins possible
+                    </label>
+        
+                    <label class="option-label" id="label_19_4">
+                        <input type="radio" name="q_19" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_19" data-correct="3">
+                    <strong>💡 Explication :</strong> L'efficacité économique réside dans l'utilisation optimale et sans gaspillage des ressources rares pour combler le maximum de besoins.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_20">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q20. La TVA est :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_20_1">
+                        <input type="radio" name="q_20" value="1">
+                        1. Une taxe payée par l'entreprise calculée en fonction de son chiffre d'affaires
+                    </label>
+        
+                    <label class="option-label" id="label_20_2">
+                        <input type="radio" name="q_20" value="2">
+                        2. Une taxe payée par l'entreprise calculée en fonction de son bénéfice
+                    </label>
+        
+                    <label class="option-label" id="label_20_3">
+                        <input type="radio" name="q_20" value="3">
+                        3. Une taxe payée par l'entreprise calculée en fonction de ses charges
+                    </label>
+        
+                    <label class="option-label" id="label_20_4">
+                        <input type="radio" name="q_20" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_20" data-correct="4">
+                    <strong>💡 Explication :</strong> La TVA est supportée exclusivement par le consommateur final. L'entreprise ne fait que la collecter et la reverser, ce n'est pas une charge.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_21">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q21. Pour toute société, son immatriculation au RC a pour effet :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_21_1">
+                        <input type="checkbox" name="q_21" value="1">
+                        1. Sa dissolution
+                    </label>
+        
+                    <label class="option-label" id="label_21_2">
+                        <input type="checkbox" name="q_21" value="2">
+                        2. Sa naissance
+                    </label>
+        
+                    <label class="option-label" id="label_21_3">
+                        <input type="checkbox" name="q_21" value="3">
+                        3. Sa personnalité
+                    </label>
+        
+                    <label class="option-label" id="label_21_4">
+                        <input type="checkbox" name="q_21" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_21" data-correct="2,3">
+                    <strong>💡 Explication :</strong> L'immatriculation au Registre du Commerce donne naissance légale à la société et lui confère une personnalité morale distincte des associés.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_22">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q22. Les apports dans une entreprise constituent :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_22_1">
+                        <input type="radio" name="q_22" value="1">
+                        1. Son capital
+                    </label>
+        
+                    <label class="option-label" id="label_22_2">
+                        <input type="radio" name="q_22" value="2">
+                        2. Son fonds de roulement
+                    </label>
+        
+                    <label class="option-label" id="label_22_3">
+                        <input type="radio" name="q_22" value="3">
+                        3. Son bilan
+                    </label>
+        
+                    <label class="option-label" id="label_22_4">
+                        <input type="radio" name="q_22" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_22" data-correct="1">
+                    <strong>💡 Explication :</strong> Les apports (en numéraire, nature) forment le capital social initial de la société inscrit en capitaux propres.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_23">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q23. Un associé doit payer les dettes de la société :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_23_1">
+                        <input type="radio" name="q_23" value="1">
+                        1. Selon son apport
+                    </label>
+        
+                    <label class="option-label" id="label_23_2">
+                        <input type="radio" name="q_23" value="2">
+                        2. Cela dépend de la forme juridique de la société
+                    </label>
+        
+                    <label class="option-label" id="label_23_3">
+                        <input type="radio" name="q_23" value="3">
+                        3. En totalité
+                    </label>
+        
+                    <label class="option-label" id="label_23_4">
+                        <input type="radio" name="q_23" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_23" data-correct="2">
+                    <strong>💡 Explication :</strong> Selon la forme juridique, la responsabilité financière change (limitée aux apports en SARL/SA, indéfinie et solidaire en SNC).
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_24">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q24. Le droit aux bénéfices est le droit de bénéficier :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_24_1">
+                        <input type="radio" name="q_24" value="1">
+                        1. De dividendes et d'économies
+                    </label>
+        
+                    <label class="option-label" id="label_24_2">
+                        <input type="radio" name="q_24" value="2">
+                        2. De dividendes uniquement
+                    </label>
+        
+                    <label class="option-label" id="label_24_3">
+                        <input type="radio" name="q_24" value="3">
+                        3. D'économies seulement
+                    </label>
+        
+                    <label class="option-label" id="label_24_4">
+                        <input type="radio" name="q_24" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_24" data-correct="1">
+                    <strong>💡 Explication :</strong> Le droit aux bénéfices confère aux associés le droit de percevoir des dividendes ou de profiter d'une économie.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_25">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q25. La valeur ajoutée</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_25_1">
+                        <input type="checkbox" name="q_25" value="1">
+                        1. Permet de mesurer la richesse créée par l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_25_2">
+                        <input type="checkbox" name="q_25" value="2">
+                        2. Se calcule par : marge brute sur ventes en l'état + production de l'exercice - consommation de l'exercice
+                    </label>
+        
+                    <label class="option-label" id="label_25_3">
+                        <input type="checkbox" name="q_25" value="3">
+                        3. Permet de mesurer la performance économique et la performance commerciale de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_25_4">
+                        <input type="checkbox" name="q_25" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_25" data-correct="1,3">
+                    <strong>💡 Explication :</strong> La valeur ajoutée exprime la richesse nette créée par l'activité de l'entreprise et mesure directement son efficacité économique.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_26">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q26. Qu'est-ce que la masse monétaire ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_26_1">
+                        <input type="radio" name="q_26" value="1">
+                        1. La quantité de monnaie en circulation détenue par les agents économiques
+                    </label>
+        
+                    <label class="option-label" id="label_26_2">
+                        <input type="radio" name="q_26" value="2">
+                        2. La quantité de monnaie détenue par la Banque centrale
+                    </label>
+        
+                    <label class="option-label" id="label_26_3">
+                        <input type="radio" name="q_26" value="3">
+                        3. La quantité de devises étrangères et locales en circulation
+                    </label>
+        
+                    <label class="option-label" id="label_26_4">
+                        <input type="radio" name="q_26" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_26" data-correct="1">
+                    <strong>💡 Explication :</strong> La masse monétaire désigne la quantité totale d'actifs liquides et monétaires en circulation détenue par les agents d'une économie.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_27">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q27. Quelle est la conséquence d'une création excessive de monnaie ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_27_1">
+                        <input type="radio" name="q_27" value="1">
+                        1. Une diminution des prêts octroyés
+                    </label>
+        
+                    <label class="option-label" id="label_27_2">
+                        <input type="radio" name="q_27" value="2">
+                        2. La déflation
+                    </label>
+        
+                    <label class="option-label" id="label_27_3">
+                        <input type="radio" name="q_27" value="3">
+                        3. Selon les monétaristes, la relance de l'activité économique
+                    </label>
+        
+                    <label class="option-label" id="label_27_4">
+                        <input type="radio" name="q_27" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_27" data-correct="4">
+                    <strong>💡 Explication :</strong> Une création monétaire abusive et déconnectée de l'économie réelle entraîne une perte de pouvoir d'achat et de l'inflation.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_28">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q28. Le coût complet d'approvisionnement comprend :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_28_1">
+                        <input type="checkbox" name="q_28" value="1">
+                        1. Le coût de première acquisition
+                    </label>
+        
+                    <label class="option-label" id="label_28_2">
+                        <input type="checkbox" name="q_28" value="2">
+                        2. Le coût de passation de la commande
+                    </label>
+        
+                    <label class="option-label" id="label_28_3">
+                        <input type="checkbox" name="q_28" value="3">
+                        3. Le coût de possession
+                    </label>
+        
+                    <label class="option-label" id="label_28_4">
+                        <input type="checkbox" name="q_28" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_28" data-correct="1,2">
+                    <strong>💡 Explication :</strong> Le coût complet d'approvisionnement comprend le prix d'achat des matières premières et les frais directs et indirects liés à l'achat.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_29">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q29. Quelle est la différence entre l'administration du personnel et la gestion du personnel ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_29_1">
+                        <input type="radio" name="q_29" value="1">
+                        1. La GRH agit sur le court terme et l'administration des RH va plus loin en jouant sur le moyen terme et le long terme
+                    </label>
+        
+                    <label class="option-label" id="label_29_2">
+                        <input type="radio" name="q_29" value="2">
+                        2. L'administration des RH comprend toutes les tâches administratives et routinières des RH. En outre, la gestion, la planification et le développement du personnel font partie de ses missions centrales
+                    </label>
+        
+                    <label class="option-label" id="label_29_3">
+                        <input type="radio" name="q_29" value="3">
+                        3. Il n'y a pas de différence entre les deux
+                    </label>
+        
+                    <label class="option-label" id="label_29_4">
+                        <input type="radio" name="q_29" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_29" data-correct="4">
+                    <strong>💡 Explication :</strong> Les propositions inversent les rôles : l'administration gère le quotidien légal à court terme, la GRH gère l'aspect stratégique à long terme.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_30">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q30. Comment appelle-t-on le support qui permet de vérifier que la partie double est respectée, et qui enregistre les opérations effectuées par l'entreprise dans l'ordre chronologique ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_30_1">
+                        <input type="radio" name="q_30" value="1">
+                        1. Le grand-livre
+                    </label>
+        
+                    <label class="option-label" id="label_30_2">
+                        <input type="radio" name="q_30" value="2">
+                        2. La balance
+                    </label>
+        
+                    <label class="option-label" id="label_30_3">
+                        <input type="radio" name="q_30" value="3">
+                        3. Le journal
+                    </label>
+        
+                    <label class="option-label" id="label_30_4">
+                        <input type="radio" name="q_30" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_30" data-correct="3">
+                    <strong>💡 Explication :</strong> Le journal enregistre chronologiquement au jour le jour toutes les transactions comptables de l'entreprise selon le principe de la partie double.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_31">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q31. C'est quoi une profession ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_31_1">
+                        <input type="radio" name="q_31" value="1">
+                        1. Ensemble de tâches, de devoirs et de responsabilités
+                    </label>
+        
+                    <label class="option-label" id="label_31_2">
+                        <input type="radio" name="q_31" value="2">
+                        2. Description sommaire des exigences d'un poste et activités qui forment son contenu (profil de poste)
+                    </label>
+        
+                    <label class="option-label" id="label_31_3">
+                        <input type="radio" name="q_31" value="3">
+                        3. Groupe d'emplois contenant des tâches semblables à l'intérieur d'une discipline donnée
+                    </label>
+        
+                    <label class="option-label" id="label_31_4">
+                        <input type="radio" name="q_31" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_31" data-correct="3">
+                    <strong>💡 Explication :</strong> Une profession regroupe un ensemble de métiers ou postes présentant des compétences et des tâches similaires dans une discipline.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_32">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q32. Pourquoi le responsable d'une entreprise délègue ses pouvoirs de décisions ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_32_1">
+                        <input type="checkbox" name="q_32" value="1">
+                        1. Transmettre une partie de ses prérogatives à un salarié de confiance
+                    </label>
+        
+                    <label class="option-label" id="label_32_2">
+                        <input type="checkbox" name="q_32" value="2">
+                        2. Motiver le salarié
+                    </label>
+        
+                    <label class="option-label" id="label_32_3">
+                        <input type="checkbox" name="q_32" value="3">
+                        3. Manque de capacité de gérer seul des obligations
+                    </label>
+        
+                    <label class="option-label" id="label_32_4">
+                        <input type="checkbox" name="q_32" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_32" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Déléguer permet d'alléger la charge du dirigeant, de responsabiliser et motiver les collaborateurs compétents pour accélérer les décisions.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_33">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q33. Comment peut-on définir oligopole ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_33_1">
+                        <input type="radio" name="q_33" value="1">
+                        1. Marché dans lequel un seul producteur/vendeur fait face à une multitude d'acheteurs
+                    </label>
+        
+                    <label class="option-label" id="label_33_2">
+                        <input type="radio" name="q_33" value="2">
+                        2. Marché dans lequel plusieurs producteurs/vendeurs font face à une multitude d'acheteurs
+                    </label>
+        
+                    <label class="option-label" id="label_33_3">
+                        <input type="radio" name="q_33" value="3">
+                        3. Marché dans lequel il n'y a qu'un petit nombre de vendeurs, en face d'une multitude d'acheteurs
+                    </label>
+        
+                    <label class="option-label" id="label_33_4">
+                        <input type="radio" name="q_33" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_33" data-correct="3">
+                    <strong>💡 Explication :</strong> Un oligopole est un marché concentré caractérisé par un petit nombre d'offreurs face à une multitude de demandeurs.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_34">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q34. Le concept d'intention stratégique conduit à une réflexion sur :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_34_1">
+                        <input type="radio" name="q_34" value="1">
+                        1. Le futur possible de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_34_2">
+                        <input type="radio" name="q_34" value="2">
+                        2. Le futur rêvé de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_34_3">
+                        <input type="radio" name="q_34" value="3">
+                        3. Le futur probable de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_34_4">
+                        <input type="radio" name="q_34" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_34" data-correct="2">
+                    <strong>💡 Explication :</strong> L'intention stratégique projette une vision ambitieuse et volontariste qui dessine le futur rêvé et désiré par l'organisation.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_35">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q35. Un objectif SMART est un objectif :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_35_1">
+                        <input type="radio" name="q_35" value="1">
+                        1. Spécifique, Mesurable, Atteignable, Réaliste, Temporel
+                    </label>
+        
+                    <label class="option-label" id="label_35_2">
+                        <input type="radio" name="q_35" value="2">
+                        2. Spécial, Mesurable, Atteignable, Relatif, Temporel
+                    </label>
+        
+                    <label class="option-label" id="label_35_3">
+                        <input type="radio" name="q_35" value="3">
+                        3. Spécial, Mémorable, Atteignable, Relatif, Temporel
+                    </label>
+        
+                    <label class="option-label" id="label_35_4">
+                        <input type="radio" name="q_35" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_35" data-correct="1">
+                    <strong>💡 Explication :</strong> Un objectif SMART doit être Spécifique, Mesurable, Atteignable, Réaliste et Temporellement défini.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_36">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q36. Le bilan se compose de six masses :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_36_1">
+                        <input type="checkbox" name="q_36" value="1">
+                        1. Actif immobilisé, Actif circulant, Trésorerie Actif
+                    </label>
+        
+                    <label class="option-label" id="label_36_2">
+                        <input type="checkbox" name="q_36" value="2">
+                        2. Financement permanent, Passif circulant, Trésorerie Passif
+                    </label>
+        
+                    <label class="option-label" id="label_36_3">
+                        <input type="checkbox" name="q_36" value="3">
+                        3. Actif d'exploitation, passif d'exploitation, charges d'exploitation
+                    </label>
+        
+                    <label class="option-label" id="label_36_4">
+                        <input type="checkbox" name="q_36" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_36" data-correct="1,2">
+                    <strong>💡 Explication :</strong> Le bilan comprend six grandes masses réparties entre l'Actif (Immobilisé, Circulant, Trésorerie) et le Passif (Financement permanent, Circulant, Trésorerie).
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_37">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q37. Les titres de participation sont :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_37_1">
+                        <input type="radio" name="q_37" value="1">
+                        1. Des titres conservés moins d'un an
+                    </label>
+        
+                    <label class="option-label" id="label_37_2">
+                        <input type="radio" name="q_37" value="2">
+                        2. Des valeurs de placement
+                    </label>
+        
+                    <label class="option-label" id="label_37_3">
+                        <input type="radio" name="q_37" value="3">
+                        3. Des titres durables à plus d'un an
+                    </label>
+        
+                    <label class="option-label" id="label_37_4">
+                        <input type="radio" name="q_37" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_37" data-correct="3">
+                    <strong>💡 Explication :</strong> Les titres de participation sont acquis pour être conservés de manière durable (plus d'un an) afin d'exercer une influence ou un contrôle.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_38">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q38. Quel chemin doit-on suivre pour insérer une image dans un texte ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_38_1">
+                        <input type="radio" name="q_38" value="1">
+                        1. Edition, insertion d'image
+                    </label>
+        
+                    <label class="option-label" id="label_38_2">
+                        <input type="radio" name="q_38" value="2">
+                        2. Format, Image
+                    </label>
+        
+                    <label class="option-label" id="label_38_3">
+                        <input type="radio" name="q_38" value="3">
+                        3. Insertion, Image
+                    </label>
+        
+                    <label class="option-label" id="label_38_4">
+                        <input type="radio" name="q_38" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_38" data-correct="3">
+                    <strong>💡 Explication :</strong> Dans les outils de traitement de texte comme Word, on passe par le menu 'Insertion' puis l'option 'Image' pour ajouter un visuel.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_39">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q39. Qu'est-ce que la marque ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_39_1">
+                        <input type="radio" name="q_39" value="1">
+                        1. L'aspect extérieur d'un produit
+                    </label>
+        
+                    <label class="option-label" id="label_39_2">
+                        <input type="radio" name="q_39" value="2">
+                        2. Design en anglais
+                    </label>
+        
+                    <label class="option-label" id="label_39_3">
+                        <input type="radio" name="q_39" value="3">
+                        3. Un signe distinctif qui sert à différencier des produits similaires
+                    </label>
+        
+                    <label class="option-label" id="label_39_4">
+                        <input type="radio" name="q_39" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_39" data-correct="3">
+                    <strong>💡 Explication :</strong> La marque est un signe distinctif exclusif servant à identifier et différencier les produits d'une entreprise de ceux de ses concurrents.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_40">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q40. La cellule F2 désigne :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_40_1">
+                        <input type="radio" name="q_40" value="1">
+                        1. Ligne F colonne 2
+                    </label>
+        
+                    <label class="option-label" id="label_40_2">
+                        <input type="radio" name="q_40" value="2">
+                        2. Colonne F ligne 2
+                    </label>
+        
+                    <label class="option-label" id="label_40_3">
+                        <input type="radio" name="q_40" value="3">
+                        3. La touche du clavier F2
+                    </label>
+        
+                    <label class="option-label" id="label_40_4">
+                        <input type="radio" name="q_40" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_40" data-correct="2">
+                    <strong>💡 Explication :</strong> La désignation F2 dans un tableur renvoie de manière unique à l'intersection entre la colonne F et la ligne 2.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_41">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q41. Un billet de fonds est :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_41_1">
+                        <input type="radio" name="q_41" value="1">
+                        1. Un compte des dettes de financement
+                    </label>
+        
+                    <label class="option-label" id="label_41_2">
+                        <input type="radio" name="q_41" value="2">
+                        2. Un compte de trésorerie passif
+                    </label>
+        
+                    <label class="option-label" id="label_41_3">
+                        <input type="radio" name="q_41" value="3">
+                        3. Immobilisations financières
+                    </label>
+        
+                    <label class="option-label" id="label_41_4">
+                        <input type="radio" name="q_41" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_41" data-correct="1">
+                    <strong>💡 Explication :</strong> Un billet de fonds est une obligation financière à moyen ou long terme liée au rachat d'un fonds de commerce, classé en dette de financement.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_42">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q42. Quand vous tapez une équation dans une cellule Excel, la première chose à faire est d'introduire :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_42_1">
+                        <input type="radio" name="q_42" value="1">
+                        1. Une parenthèse
+                    </label>
+        
+                    <label class="option-label" id="label_42_2">
+                        <input type="radio" name="q_42" value="2">
+                        2. Le signe égal
+                    </label>
+        
+                    <label class="option-label" id="label_42_3">
+                        <input type="radio" name="q_42" value="3">
+                        3. Un double apostrophe
+                    </label>
+        
+                    <label class="option-label" id="label_42_4">
+                        <input type="radio" name="q_42" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_42" data-correct="2">
+                    <strong>💡 Explication :</strong> Le signe égal (=) indique immédiatement au tableur qu'il doit interpréter le texte saisi comme une formule ou une fonction de calcul.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_43">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q43. Qu'est-ce que la logistique aval ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_43_1">
+                        <input type="radio" name="q_43" value="1">
+                        1. Elle porte sur la livraison des commandes aux clients
+                    </label>
+        
+                    <label class="option-label" id="label_43_2">
+                        <input type="radio" name="q_43" value="2">
+                        2. Elle porte sur l'approvisionnement des produits
+                    </label>
+        
+                    <label class="option-label" id="label_43_3">
+                        <input type="radio" name="q_43" value="3">
+                        3. Elle porte sur les économies d'énergie
+                    </label>
+        
+                    <label class="option-label" id="label_43_4">
+                        <input type="radio" name="q_43" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_43" data-correct="1">
+                    <strong>💡 Explication :</strong> La logistique aval gère les flux physiques de distribution et de livraison des produits finis depuis les entrepôts jusqu'aux clients.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_44">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q44. Personnes concernées par les états financiers de l'entreprise ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_44_1">
+                        <input type="checkbox" name="q_44" value="1">
+                        1. Les dirigeants
+                    </label>
+        
+                    <label class="option-label" id="label_44_2">
+                        <input type="checkbox" name="q_44" value="2">
+                        2. Les associés
+                    </label>
+        
+                    <label class="option-label" id="label_44_3">
+                        <input type="checkbox" name="q_44" value="3">
+                        3. Les salariés
+                    </label>
+        
+                    <label class="option-label" id="label_44_4">
+                        <input type="checkbox" name="q_44" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_44" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Les états financiers sont destinés à informer toutes les parties prenantes de l'entité : dirigeants, associés et salariés.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_45">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q45. Par quelle fonction peut-on obtenir des enchaînements entre diapositives à des vitesses différentes ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_45_1">
+                        <input type="radio" name="q_45" value="1">
+                        1. Avec la fonction prédéfinir l'animation
+                    </label>
+        
+                    <label class="option-label" id="label_45_2">
+                        <input type="radio" name="q_45" value="2">
+                        2. Avec la fonction transition
+                    </label>
+        
+                    <label class="option-label" id="label_45_3">
+                        <input type="radio" name="q_45" value="3">
+                        3. Avec la fonction menu Edition/définir diaporama
+                    </label>
+        
+                    <label class="option-label" id="label_45_4">
+                        <input type="radio" name="q_45" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_45" data-correct="2">
+                    <strong>💡 Explication :</strong> Les fonctions de transition permettent de définir l'effet visuel et la vitesse lors du passage d'une diapositive à une autre.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_46">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q46. Que risque-t-on de perdre quand on enregistre une page web avec l'option HTML seulement ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_46_1">
+                        <input type="checkbox" name="q_46" value="1">
+                        1. La mise en forme
+                    </label>
+        
+                    <label class="option-label" id="label_46_2">
+                        <input type="checkbox" name="q_46" value="2">
+                        2. Les hyperliens
+                    </label>
+        
+                    <label class="option-label" id="label_46_3">
+                        <input type="checkbox" name="q_46" value="3">
+                        3. Les vidéos
+                    </label>
+        
+                    <label class="option-label" id="label_46_4">
+                        <input type="checkbox" name="q_46" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_46" data-correct="1,3">
+                    <strong>💡 Explication :</strong> L'enregistrement en HTML seul ne sauvegarde pas les styles complexes (CSS) et les éléments multimédias physiques hébergés localement.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_47">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q47. Quelles sont les informations à indiquer quand on fait référence à une page web dans un rapport ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_47_1">
+                        <input type="checkbox" name="q_47" value="1">
+                        1. L'URL
+                    </label>
+        
+                    <label class="option-label" id="label_47_2">
+                        <input type="checkbox" name="q_47" value="2">
+                        2. La date de consultation
+                    </label>
+        
+                    <label class="option-label" id="label_47_3">
+                        <input type="checkbox" name="q_47" value="3">
+                        3. L'auteur
+                    </label>
+        
+                    <label class="option-label" id="label_47_4">
+                        <input type="checkbox" name="q_47" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_47" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Une référence web académique propre requiert l'URL complète, le nom de l'auteur et la date précise de la consultation en ligne.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_48">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q48. Quel processus permet de résoudre les conflits d'accès à un fichier ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_48_1">
+                        <input type="radio" name="q_48" value="1">
+                        1. L'authentification
+                    </label>
+        
+                    <label class="option-label" id="label_48_2">
+                        <input type="radio" name="q_48" value="2">
+                        2. Le verrouillage
+                    </label>
+        
+                    <label class="option-label" id="label_48_3">
+                        <input type="radio" name="q_48" value="3">
+                        3. La sauvegarde
+                    </label>
+        
+                    <label class="option-label" id="label_48_4">
+                        <input type="radio" name="q_48" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_48" data-correct="2">
+                    <strong>💡 Explication :</strong> Le verrouillage de fichier (file locking) empêche les accès concurrents simultanés en écriture pour éviter d'écraser des données.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_49">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q49. Le contrôle de gestion :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_49_1">
+                        <input type="checkbox" name="q_49" value="1">
+                        1. Est un ensemble de procédures qui a pour but de permettre à la direction de s'assurer que les objectifs sont atteints de manière efficace et efficiente
+                    </label>
+        
+                    <label class="option-label" id="label_49_2">
+                        <input type="checkbox" name="q_49" value="2">
+                        2. Doit s'assurer que le comportement des individus est cohérent avec les objectifs de l'entité
+                    </label>
+        
+                    <label class="option-label" id="label_49_3">
+                        <input type="checkbox" name="q_49" value="3">
+                        3. Doit non seulement être appréhendé dans le sens de vérification, mais aussi dans celui de pilotage de l'organisation
+                    </label>
+        
+                    <label class="option-label" id="label_49_4">
+                        <input type="checkbox" name="q_49" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_49" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Le contrôle de gestion moderne conçoit des indicateurs, assure le pilotage stratégique et la convergence des buts humains vers les buts collectifs.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_50">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q50. Les phases du système budgétaire sont consécutivement :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_50_1">
+                        <input type="radio" name="q_50" value="1">
+                        1. Prévision - budgétisation - contrôle
+                    </label>
+        
+                    <label class="option-label" id="label_50_2">
+                        <input type="radio" name="q_50" value="2">
+                        2. Budgétisation - contrôle - prévision
+                    </label>
+        
+                    <label class="option-label" id="label_50_3">
+                        <input type="radio" name="q_50" value="3">
+                        3. Contrôle - prévision - budgétisation
+                    </label>
+        
+                    <label class="option-label" id="label_50_4">
+                        <input type="radio" name="q_50" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_50" data-correct="1">
+                    <strong>💡 Explication :</strong> La gestion budgétaire suit la séquence logique : prévision à moyen terme, budgétisation annuelle, puis contrôle régulier des écarts.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_51">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q51. Quelles sont les charges couvertes par la valeur ajoutée ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_51_1">
+                        <input type="checkbox" name="q_51" value="1">
+                        1. Impôts et taxes
+                    </label>
+        
+                    <label class="option-label" id="label_51_2">
+                        <input type="checkbox" name="q_51" value="2">
+                        2. Amortissement du matériel
+                    </label>
+        
+                    <label class="option-label" id="label_51_3">
+                        <input type="checkbox" name="q_51" value="3">
+                        3. Frais financiers (intérêts d'emprunts...)
+                    </label>
+        
+                    <label class="option-label" id="label_51_4">
+                        <input type="checkbox" name="q_51" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_51" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> La valeur ajoutée créée sert à rémunérer les salariés, l'État (impôts), les prêteurs (intérêts) et l'entreprise (autofinancement/amortissement).
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_52">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q52. On classe les flux financiers de l'entreprise :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_52_1">
+                        <input type="checkbox" name="q_52" value="1">
+                        1. Les flux du financement permanent
+                    </label>
+        
+                    <label class="option-label" id="label_52_2">
+                        <input type="checkbox" name="q_52" value="2">
+                        2. Les flux d'investissement
+                    </label>
+        
+                    <label class="option-label" id="label_52_3">
+                        <input type="checkbox" name="q_52" value="3">
+                        3. Les flux des capitaux propres
+                    </label>
+        
+                    <label class="option-label" id="label_52_4">
+                        <input type="checkbox" name="q_52" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_52" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Les flux financiers décrivent la circulation des liquidités liée aux opérations d'exploitation, d'investissement et de financement.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_53">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q53. Relevez les propositions qui peuvent caractériser le contrôle budgétaire :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_53_1">
+                        <input type="checkbox" name="q_53" value="1">
+                        1. Il permet de rechercher les causes d'écarts
+                    </label>
+        
+                    <label class="option-label" id="label_53_2">
+                        <input type="checkbox" name="q_53" value="2">
+                        2. Il permet d'apprécier l'activité des responsables budgétaires
+                    </label>
+        
+                    <label class="option-label" id="label_53_3">
+                        <input type="checkbox" name="q_53" value="3">
+                        3. Il est constitué de deux activités principales : mise en évidence d'écarts et mise en oeuvre d'action
+                    </label>
+        
+                    <label class="option-label" id="label_53_4">
+                        <input type="checkbox" name="q_53" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_53" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Le contrôle budgétaire s'attache à constater les écarts, analyser finement leurs causes réelles et engager des actions de correction.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_54">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q54. L'écart c'est la différence entre :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_54_1">
+                        <input type="radio" name="q_54" value="1">
+                        1. La prévision et la réalisation
+                    </label>
+        
+                    <label class="option-label" id="label_54_2">
+                        <input type="radio" name="q_54" value="2">
+                        2. La réalisation et la prévision
+                    </label>
+        
+                    <label class="option-label" id="label_54_3">
+                        <input type="radio" name="q_54" value="3">
+                        3. La prévision et l'estimation
+                    </label>
+        
+                    <label class="option-label" id="label_54_4">
+                        <input type="radio" name="q_54" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_54" data-correct="2">
+                    <strong>💡 Explication :</strong> L'écart budgétaire se calcule de manière standard par la formule : Réalisation (Réel) moins la Prévision (Budget).
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_55">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q55. Le budget déterminant c'est :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_55_1">
+                        <input type="radio" name="q_55" value="1">
+                        1. Le budget de production
+                    </label>
+        
+                    <label class="option-label" id="label_55_2">
+                        <input type="radio" name="q_55" value="2">
+                        2. Le budget de trésorerie
+                    </label>
+        
+                    <label class="option-label" id="label_55_3">
+                        <input type="radio" name="q_55" value="3">
+                        3. Le budget des ventes
+                    </label>
+        
+                    <label class="option-label" id="label_55_4">
+                        <input type="radio" name="q_55" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_55" data-correct="3">
+                    <strong>💡 Explication :</strong> Le budget des ventes est le budget pivot/déterminant car l'activité de production et d'achat dépend directement de la demande prévisionnelle.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_56">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q56. Le benchmarking :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_56_1">
+                        <input type="radio" name="q_56" value="1">
+                        1. Est une méthode de diagnostic et d'analyse qui consiste à se comparer aux meilleurs
+                    </label>
+        
+                    <label class="option-label" id="label_56_2">
+                        <input type="radio" name="q_56" value="2">
+                        2. Est une méthode de diagnostic et d'analyse de la concurrence
+                    </label>
+        
+                    <label class="option-label" id="label_56_3">
+                        <input type="radio" name="q_56" value="3">
+                        3. Est une méthode de calcul des coûts complets
+                    </label>
+        
+                    <label class="option-label" id="label_56_4">
+                        <input type="radio" name="q_56" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_56" data-correct="1">
+                    <strong>💡 Explication :</strong> Le benchmarking consiste à analyser, mesurer et comparer les pratiques de son entreprise par rapport aux meilleurs acteurs du marché.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_57">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q57. Choisir les cycles financiers principaux dans l'entreprise :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_57_1">
+                        <input type="radio" name="q_57" value="1">
+                        1. Le cycle d'investissement
+                    </label>
+        
+                    <label class="option-label" id="label_57_2">
+                        <input type="radio" name="q_57" value="2">
+                        2. Le cycle des opérations financières
+                    </label>
+        
+                    <label class="option-label" id="label_57_3">
+                        <input type="radio" name="q_57" value="3">
+                        3. Le cycle des opérations de stock cyclique
+                    </label>
+        
+                    <label class="option-label" id="label_57_4">
+                        <input type="radio" name="q_57" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_57" data-correct="1">
+                    <strong>💡 Explication :</strong> L'analyse financière s'articule autour des cycles d'investissement à long terme et des cycles d'exploitation à court terme.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_58">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q58. La gestion budgétaire permet de :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_58_1">
+                        <input type="checkbox" name="q_58" value="1">
+                        1. Eviter les erreurs du passé de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_58_2">
+                        <input type="checkbox" name="q_58" value="2">
+                        2. Améliorer le présent de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_58_3">
+                        <input type="checkbox" name="q_58" value="3">
+                        3. Préparer l'avenir de l'entreprise
+                    </label>
+        
+                    <label class="option-label" id="label_58_4">
+                        <input type="checkbox" name="q_58" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_58" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> La gestion budgétaire permet de tirer les enseignements du passé, de piloter le présent avec agilité et de planifier l'avenir.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_59">
+                <span class="badge badge-multiple">Plusieurs choix possibles</span>
+                <div class="question-title">Q59. Les types d'inventaire sont :</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_59_1">
+                        <input type="checkbox" name="q_59" value="1">
+                        1. L'inventaire permanent
+                    </label>
+        
+                    <label class="option-label" id="label_59_2">
+                        <input type="checkbox" name="q_59" value="2">
+                        2. L'inventaire annuel
+                    </label>
+        
+                    <label class="option-label" id="label_59_3">
+                        <input type="checkbox" name="q_59" value="3">
+                        3. L'inventaire intermittent
+                    </label>
+        
+                    <label class="option-label" id="label_59_4">
+                        <input type="checkbox" name="q_59" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_59" data-correct="1,2,3">
+                    <strong>💡 Explication :</strong> Les entreprises gèrent leurs stocks via des inventaires permanents (en temps réel), annuels (comptage obligatoire) ou intermittents.
+                </div>
+            </div>
+    
+            <div class="question-card" id="q_box_60">
+                <span class="badge">Choix unique</span>
+                <div class="question-title">Q60. La pyramide de Maslow est basée sur l'hypothèse d'une hiérarchie de besoin. Comment peut-on classer ces besoins ?</div>
+                <div class="options-container">
+    
+                    <label class="option-label" id="label_60_1">
+                        <input type="radio" name="q_60" value="1">
+                        1. Les besoins physiologiques, les besoins de sécurité, les besoins d'appartenance et d'amour, les besoins d'estime et le besoin d'accomplissement de soi
+                    </label>
+        
+                    <label class="option-label" id="label_60_2">
+                        <input type="radio" name="q_60" value="2">
+                        2. Les besoins physiologiques, les besoins de sécurité, le besoin d'accomplissement de soi, les besoins d'appartenance et d'amour et les besoins d'estime
+                    </label>
+        
+                    <label class="option-label" id="label_60_3">
+                        <input type="radio" name="q_60" value="3">
+                        3. Les besoins physiologiques, les besoins d'appartenance, les besoins de sécurité, les besoins d'estime et le besoin d'accomplissement de soi
+                    </label>
+        
+                    <label class="option-label" id="label_60_4">
+                        <input type="radio" name="q_60" value="4">
+                        4. Toutes les réponses sont fausses
+                    </label>
+        
+                </div>
+                <div class="explanation-box" id="exp_60" data-correct="1">
+                    <strong>💡 Explication :</strong> La pyramide de Maslow hiérarchise les besoins dans l'ordre : physiologiques, sécurité, appartenance, estime et accomplissement.
+                </div>
+            </div>
+    
+        </form>
+
+        <div class="summary-card" style="margin-top: 2rem;">
+            <h3>Prêt à valider vos réponses ?</h3>
+            <button class="btn btn-success" onclick="checkAnswers()">Terminer et afficher le corrigé</button>
+        </div>
+    </div>
+
+    <script>
+        function checkAnswers() {
+            const totalQuestions = 60;
+            let score = 0;
+
+            // Loop through each question card
+            for(let i = 1; i <= totalQuestions; i++) {
+                const qBox = document.getElementById('q_box_' + i);
+                const expBox = document.getElementById('exp_' + i);
+                const correctAnswers = expBox.getAttribute('data-correct').split(',').map(Number);
+                
+                // Get user checked values
+                const checkedBoxes = document.querySelectorAll(`input[name="q_${i}"]:checked`);
+                const userAnswers = Array.from(checkedBoxes).map(cb => Number(cb.value));
+
+                // Check correctness
+                let isCorrect = true;
+                
+                // 1. Check if all user answers are correct
+                if (userAnswers.length !== correctAnswers.length) {
+                    isCorrect = false;
+                } else {
+                    for(let val of userAnswers) {
+                        if(!correctAnswers.includes(val)) {
+                            isCorrect = false;
+                            break;
+                        }
+                    }
+                }
+
+                // Colorize the question block
+                if (isCorrect) {
+                    qBox.classList.add('correct');
+                    qBox.classList.remove('incorrect');
+                    score++;
+                } else {
+                    qBox.classList.add('incorrect');
+                    qBox.classList.remove('correct');
+                }
+
+                // Show explanation
+                expBox.style.display = 'block';
+
+                // Highlight answers individually
+                const allInputs = document.querySelectorAll(`input[name="q_${i}"]`);
+                allInputs.forEach(input => {
+                    const val = Number(input.value);
+                    const label = document.getElementById(`label_${i}_${val}`);
+                    
+                    // Reset previous styling if any
+                    label.classList.remove('correct-option', 'incorrect-option');
+
+                    if (correctAnswers.includes(val)) {
+                        // Highlight true answers in green
+                        label.classList.add('correct-option');
+                    } else if (input.checked && !correctAnswers.includes(val)) {
+                        // Highlight checked wrong answer in red
+                        label.classList.add('incorrect-option');
+                    }
+                });
+            }
+
+            // Display overall score board
+            const scoreBox = document.getElementById('scoreBox');
+            const scoreValue = document.getElementById('scoreValue');
+            const scoreCommentText = document.getElementById('scoreCommentText');
+            
+            scoreValue.innerText = `${score} / ${totalQuestions}`;
+            scoreBox.style.display = 'block';
+            
+            let comment = "";
+            if(score === totalQuestions) {
+                comment = "🏆 Parfait ! Excellence académique absolue !";
+            } else if(score >= 45) {
+                comment = "✨ Excellent travail ! Vous maîtrisez parfaitement ces notions.";
+            } else if(score >= 30) {
+                comment = "👍 Bon résultat. La moyenne est atteinte, n'hésitez pas à relire les explications pour progresser.";
+            } else {
+                comment = "📚 Des révisions sont nécessaires. Prenez le temps de lire attentivement chaque fiche explicative.";
+            }
+            scoreCommentText.innerText = comment;
+
+            // Scroll smoothly to top to see score
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>
